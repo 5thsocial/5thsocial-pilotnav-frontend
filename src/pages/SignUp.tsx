@@ -21,7 +21,7 @@ const SignUp = () => {
       }
       
       toast.success(response.message || 'Sign up successful. Redirecting...');
-      navigate('/signin');
+      navigate('/');
     } catch (error: any) {
       toast.error(error.message || 'Sign up failed');
       throw error;
