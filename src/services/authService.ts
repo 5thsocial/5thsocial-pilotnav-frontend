@@ -86,23 +86,13 @@ class AuthService {
   }
 
   async getGoogleAuthUrl() {
-    try {
-      const response = await api.get('/auth/google/auth-url');
-      return { url: response.data.data.authUrl };
-    } catch (error: any) {
-      console.error('Google auth URL error:', error.response?.data);
-      throw new Error(error.response?.data?.message || 'Failed to get Google auth URL');
-    }
+    const baseUrl = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+    return { url: `${baseUrl}/auth/google` };
   }
 
   async getFacebookAuthUrl() {
-    try {
-      const response = await api.get('/auth/facebook/auth-url');
-      return { url: response.data.data.authUrl };
-    } catch (error: any) {
-      console.error('Facebook auth URL error:', error.response?.data);
-      throw new Error(error.response?.data?.message || 'Failed to get Facebook auth URL');
-    }
+    const baseUrl = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+    return { url: `${baseUrl}/auth/facebook` };
   }
 
   async forgotPassword(email: string) {

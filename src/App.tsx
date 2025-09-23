@@ -8,6 +8,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast"; // ADD THIS IMPORT
 import { ThemeProvider } from "./contexts/ThemeContext";
 import PilotShell from "./components/PilotShell";
 import AuthLayout from "./layouts/AuthLayout";
@@ -78,6 +79,45 @@ function AppContent() {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [location.pathname, navigate]);
+
+  // OAuth message listener
+  useEffect(() => {
+    // Listen for OAuth success messages from popup windows
+    const handleMessage = (event: MessageEvent) => {
+      // Security check - only accept messages from same origin
+      if (event.origin !== window.location.origin) return;
+      
+      if (event.data.type === 'GOOGLE_AUTH_SUCCESS' || event.data.type === 'FACEBOOK_AUTH_SUCCESS') {
+        const { token, user, message } = event.data.data;
+        
+        // Store auth data
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Update app state
+        setIsAuthenticated(true);
+        
+        // Show success message
+        toast.success(message || 'Authentication successful');
+        
+        // Navigate to home
+        navigate('/', { replace: true });
+        
+        // Trigger storage event for other tabs
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'authToken',
+          newValue: token
+        }));
+      }
+      
+      if (event.data.type === 'GOOGLE_AUTH_ERROR' || event.data.type === 'FACEBOOK_AUTH_ERROR') {
+        toast.error(event.data.error || 'Authentication failed');
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [navigate, setIsAuthenticated]);
 
   // Handle workflow selection from URL
   useEffect(() => {
