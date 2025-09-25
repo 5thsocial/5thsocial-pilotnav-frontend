@@ -4,8 +4,8 @@ import type { AppSummary, NavItem, PilotRoute } from '../types/nav'
 
 const API_BASE: string =
   (window as any).__API_BASE__ ||
-  (import.meta as any)?.env?.VITE_API_BASE ||  // Match .env
-  'http://localhost:3000/api';  // Backend port
+  (import.meta as any).env?.VITE_API_BASE ||
+  'https://fivethsocial-backend-t67i.onrender.com/api';
 
 export async function fetchApps(): Promise<{ apps: AppSummary[] }> {
   const r = await fetch(`${API_BASE}/nav/apps`, { credentials: 'include' })
